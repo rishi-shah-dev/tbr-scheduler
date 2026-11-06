@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Planner</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>📚 Reading Planner</h1>
+        <div id="stats-summary">Loading library...</div>
+    </header>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+              <!-- NEW: Sidebar Tabs -->
+            <div class="sidebar-tabs">
+                <button id="tab-library" class="active">Library</button>
+                <button id="tab-queue">Queue</button>
+            </div>
+           <div id="library-view">
+                <input type="text" id="search-books" placeholder="Search books...">
+                <select id="sort-books">
+                    <option value="title">Sort by Title</option>
+                    <option value="author">Sort by Author</option>
+                    <option value="words-asc">Shortest First</option>
+                    <option value="words-desc">Longest First</option>
+                </select>
+                <ul id="book-list"></ul>
+            </div>
+
+             <!-- NEW: Queue View -->
+            <div id="queue-view" class="hidden">
+                <ul id="queue-list"></ul>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+
+             <!-- NEW: GLOBAL DASHBOARD -->
+            <section class="dashboard">
+                <div class="dash-card">
+                    <span class="label">Total Library</span>
+                    <span class="value" id="global-books">0 Books</span>
+                </div>
+                <div class="dash-card">
+                    <span class="label">Total Read Time</span>
+                    <span class="value" id="global-hours">0 Hours</span>
+                </div>
+                <div class="dash-card highlight">
+                    <span class="label">Est. Books Per Year</span>
+                    <span class="value" id="global-books-year">0</span>
+                    <small>Based on your schedule</small>
+                </div>
+            </section>
+            <!-- SETTINGS PANEL -->
+            <section class="settings-panel">
+                <h2>Reading Parameters</h2>
+                <div class="settings-grid">
+                    <div class="setting">
+                        <label>Book Type</label>
+                        <div class="toggle-group">
+                            <label>
+                                <input type="radio" name="book-type" value="fiction" checked>
+                                <span>Fiction</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="book-type" value="nonfiction">
+                                <span>Non-Fiction</span>
+                            </label>
+                        </div>
+                        <small>Sets default reading speed</small>
+                    </div>
+
+                    <div class="setting">
+                        <label>Reading Speed (Words/min)</label>
+                        <input type="number" id="wpm" value="260" min="50" max="1000">
+                        <small id="wpm-helper">Fiction avg: ~260 wpm</small>
+                    </div>
+                    <div class="setting">
+                        <label>Pomodoro Length (Mins)</label>
+                        <input type="number" id="pomo-time" value="25" min="5" max="120">
+                    </div>
+                    <div class="setting">
+                        <label>Weekday Sessions</label>
+                        <input type="number" id="weekday-sessions" value="2" min="0" max="10">
+                    </div>
+                    <div class="setting">
+                        <label>Weekend Sessions</label>
+                        <input type="number" id="weekend-sessions" value="4" min="0" max="10">
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESULTS PANEL -->
+            <section class="plan-panel hidden" id="plan-panel">
+                <div class="book-header">
+                    <img id="book-cover" src="" alt="Cover" onerror="this.style.display='none'">
+                    <div class="book-title-area">
+                        <h2 id="selected-book-title">Select a book</h2>
+                        <p id="selected-book-author" class="author"></p>
+                        
+                        <!-- Status Dropdown -->
+                        <select id="book-status">
+                            <option value="unread">Unread</option>
+                            <option value="reading">Currently Reading</option>
+                            <option value="finished">Finished</option>
+                        </select>
+                        <!-- NEW: Add to Queue -->
+                        <button id="add-to-queue-btn" class="btn-secondary">+ Add to Queue</button>
+                    </div>
+                </div>
+                
+                <div class="override-box">
+                    <label>
+                        <input type="checkbox" id="override-wpm-check"> 
+                        Override reading speed for this book
+                    </label>
+                    <input type="number" id="override-wpm-value" value="250" disabled>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span id="progress-text">0 / 0 words read (0%)</span>
+                        <button id="log-session-btn" class="btn-primary">✅ Log 1 Pomodoro</button>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric-card">
+                        <span class="label">Words Remaining</span>
+                        <span class="value" id="res-words">-</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Time Remaining</span>
+                        <span class="value" id="res-hours">-</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Pomodoros Left</span>
+                        <span class="value" id="res-sessions">-</span>
+                    </div>
+                    <div class="metric-card highlight">
+                        <span class="label">Est. Finish Date</span>
+                        <span class="value" id="res-date">-</span>
+                    </div>
+                </div>
+
+                <div class="chapter-breakdown">
+                    <h3>Daily Target</h3>
+                    <p id="daily-target">-</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/calc.js"></script>
+    <script src="js/library.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
