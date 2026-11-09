@@ -500,3 +500,80 @@ header h1 { font-size: 1.2rem; }
     border: 1px dashed #333;
     opacity: 0.3;
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS (Tablets & Phones)
+   ========================================= */
+@media (max-width: 768px) {
+    /* 1. Stack the Header & make it compact */
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+    }
+    header h1 { font-size: 1rem; }
+    #stats-summary { font-size: 0.75rem; }
+
+    /* 2. Stack the Main Layout */
+    .container {
+        flex-direction: column;
+        overflow-y: auto; 
+    }
+
+    /* 3. Sidebar Fixes */
+    .sidebar {
+        width: 100%;
+        height: 45vh; /* Give it a bit more room */
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+        overflow: hidden; /* ✅ CRITICAL FIX: Stops the list from bleeding out */
+    }
+
+    /* 4. Adjust Main Content padding */
+    .content {
+        padding: 1rem;
+        overflow-y: visible;
+    }
+
+    /* 5. Stack the Grids */
+    .dashboard,
+    .settings-grid,
+    .metrics {
+        grid-template-columns: 1fr; 
+    }
+
+    /* 6. Fix the Calendar for Mobile */
+    .calendar-grid {
+        grid-template-columns: 1fr; 
+    }
+    
+    /* Hide the Sun/Mon/Tue headers since it's no longer a grid */
+    .calendar-header-cell,
+    .calendar-day.empty {
+        display: none; 
+    }
+
+    .calendar-day {
+        min-height: auto; 
+    }
+
+    /* 7. Adjust Settings Toggle */
+    .toggle-group span {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.8rem;
+    }
+
+    /* 8. Make tabs scrollable horizontally if they overflow */
+    .main-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-top: 1rem;
+    }
+    
+    /* Hide the "Loading library..." text once loaded */
+    #stats-summary {
+        display: none; 
+    }
+}
