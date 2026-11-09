@@ -16,6 +16,112 @@ const App = {
         this.setupListeners();
     },
 
+    switchMainTab: function(tab) {
+        document.getElementById('tab-calc').classList.remove('active');
+        document.getElementById('tab-schedule').classList.remove('active');
+        document.getElementById('view-calc').classList.add('hidden');
+        document.getElementById('view-schedule').classList.add('hidden');
+
+        if (tab === 'calc') {
+            document.getElementById('tab-calc').classList.add('active');
+            document.getElementById('view-calc').classList.remove('hidden');
+        } else {
+            document.getElementById('tab-schedule').classList.add('active');
+            document.getElementById('view-schedule').classList.remove('hidden');
+        }
+    },
+
+    renderCalendar: function() {
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
+
+        // 1. Add Day Headers (Sun - Sat)
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        days.forEach(day => {
+            const header = document.createElement('div');
+            header.className = 'calendar-header-cell';
+            header.innerText = day;
+            grid.appendChild(header);
+        });
+
+        // 2. Get queue books with remaining words
+        const queueBooks = this.queue.map(uuid => {
+            const book = this.allBooks.find(b => b.uuid === uuid);
+            if (!book) return null;
+            const p = this.progressData[uuid] || { wordsRead: 0 };
+            const remainingWords = Math.max(0, book.total_words - p.wordsRead);
+            return { ...book, remainingWords };
+        }).filter(b => b && b.remainingWords > 0);
+
+        if (queueBooks.length === 0) {
+            grid.innerHTML += `<div class="empty-state" style="grid-column: 1 / -1; margin-top: 1rem;">
+                Your queue is empty or all books are finished! Add books to the Queue tab to see your schedule.
+            </div>`;
+            return;
+        }
+
+        const wpm = this.getCurrentWpm();
+        const pomoMins = parseFloat(document.getElementById('pomo-time').value) || 25;
+        const weekdaySessions = parseInt(document.getElementById('weekday-sessions').value) || 0;
+        const weekendSessions = parseInt(document.getElementById('weekend-sessions').value) || 0;
+
+        const schedule = Calc.generateSchedule(queueBooks, wpm, pomoMins, weekdaySessions, weekendSessions);
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        let checkDate = new Date();
+        
+        // 3. Add empty cells for the days BEFORE today in this week
+        // (e.g., if today is Wednesday (3), add 3 empty cells for Sun, Mon, Tue)
+        for (let i = 0; i < checkDate.getDay(); i++) {
+            const emptyEl = document.createElement('div');
+            emptyEl.className = 'calendar-day empty';
+            grid.appendChild(emptyEl);
+        }
+
+        // 4. Render 30 days
+        for (let i = 0; i < 30; i++) {
+            const dateStr = checkDate.toISOString().split('T')[0];
+            const dayData = schedule[dateStr];
+            
+            const dayEl = document.createElement('div');
+            dayEl.className = 'calendar-day';
+            if (dateStr === todayStr) dayEl.classList.add('today');
+            if (checkDate.getDay() === 0 || checkDate.getDay() === 6) dayEl.classList.add('weekend');
+
+            const options = { month: 'short', day: 'numeric' };
+            const displayDate = checkDate.toLocaleDateString('en-US', options);
+
+            let tasksHtml = '';
+            if (dayData && dayData.tasks.length > 0) {
+                dayData.tasks.forEach(t => {
+                    // Calculate pomodoros for this specific task
+                    const pomos = Math.ceil(t.words / (pomoMins * wpm));
+                    
+                    tasksHtml += `
+                        <div class="task-item ${t.isFinished ? 'finished' : ''}">
+                            <span class="task-title" title="${t.title}">${t.title}</span>
+                            <span class="task-words">${t.words.toLocaleString()} words (${pomos} Pomo${pomos > 1 ? 's' : ''})</span>
+                        </div>
+                    `;
+                });
+            } else if (!dayData) {
+                 tasksHtml = `<div style="color:#555; font-size:0.75rem; text-align:center; margin-top:1rem;">Rest Day</div>`;
+            }
+
+            dayEl.innerHTML = `
+                <div class="day-header">
+                    <span>${displayDate}</span>
+                </div>
+                <div class="day-tasks">
+                    ${tasksHtml}
+                </div>
+            `;
+
+            grid.appendChild(dayEl);
+            checkDate.setDate(checkDate.getDate() + 1);
+        }
+    },
+
     setupListeners: function() {
         // Tabs
         document.getElementById('tab-library').addEventListener('click', () => this.switchTab('library'));
@@ -24,6 +130,13 @@ const App = {
         // Search & Sort
         document.getElementById('search-books').addEventListener('input', () => this.filterAndRender());
         document.getElementById('sort-books').addEventListener('change', () => this.filterAndRender());
+
+        // Main Tabs
+        document.getElementById('tab-calc').addEventListener('click', () => this.switchMainTab('calc'));
+        document.getElementById('tab-schedule').addEventListener('click', () => {
+            this.switchMainTab('schedule');
+            this.renderCalendar(); // Generate calendar when tab is clicked
+        });
 
         // Settings
         const inputs = ['wpm', 'pomo-time', 'weekday-sessions', 'weekend-sessions'];

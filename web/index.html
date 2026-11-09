@@ -40,6 +40,11 @@
 
         <!-- MAIN CONTENT -->
         <main class="content">
+            <!-- NEW: Main Tabs -->
+            <div class="main-tabs">
+                <button id="tab-calc" class="active">Calculator</button>
+                <button id="tab-schedule">Reading Schedule</button>
+            </div>
 
              <!-- NEW: GLOBAL DASHBOARD -->
             <section class="dashboard">
@@ -57,107 +62,124 @@
                     <small>Based on your schedule</small>
                 </div>
             </section>
-            <!-- SETTINGS PANEL -->
-            <section class="settings-panel">
-                <h2>Reading Parameters</h2>
-                <div class="settings-grid">
-                    <div class="setting">
-                        <label>Book Type</label>
-                        <div class="toggle-group">
-                            <label>
-                                <input type="radio" name="book-type" value="fiction" checked>
-                                <span>Fiction</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="book-type" value="nonfiction">
-                                <span>Non-Fiction</span>
-                            </label>
+            
+
+            
+             <!-- CALCULATOR VIEW -->
+            <div id="view-calc">
+                <!-- SETTINGS PANEL -->
+                <section class="settings-panel">
+                    <h2>Reading Parameters</h2>
+                    <div class="settings-grid">
+                        <div class="setting">
+                            <label>Book Type</label>
+                            <div class="toggle-group">
+                                <label>
+                                    <input type="radio" name="book-type" value="fiction" checked>
+                                    <span>Fiction</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="book-type" value="nonfiction">
+                                    <span>Non-Fiction</span>
+                                </label>
+                            </div>
+                            <small>Sets default reading speed</small>
                         </div>
-                        <small>Sets default reading speed</small>
+
+                        <div class="setting">
+                            <label>Reading Speed (Words/min)</label>
+                            <input type="number" id="wpm" value="260" min="50" max="1000">
+                            <small id="wpm-helper">Fiction avg: ~260 wpm</small>
+                        </div>
+                        <div class="setting">
+                            <label>Pomodoro Length (Mins)</label>
+                            <input type="number" id="pomo-time" value="25" min="5" max="120">
+                        </div>
+                        <div class="setting">
+                            <label>Weekday Sessions</label>
+                            <input type="number" id="weekday-sessions" value="2" min="0" max="10">
+                        </div>
+                        <div class="setting">
+                            <label>Weekend Sessions</label>
+                            <input type="number" id="weekend-sessions" value="4" min="0" max="10">
+                        </div>
+                    </div>
+                </section>
+                <!-- RESULTS PANEL -->
+                <section class="plan-panel hidden" id="plan-panel">
+                    <div class="book-header">
+                        <img id="book-cover" src="" alt="Cover" onerror="this.style.display='none'">
+                        <div class="book-title-area">
+                            <h2 id="selected-book-title">Select a book</h2>
+                            <p id="selected-book-author" class="author"></p>
+                            
+                            <!-- Status Dropdown -->
+                            <select id="book-status">
+                                <option value="unread">Unread</option>
+                                <option value="reading">Currently Reading</option>
+                                <option value="finished">Finished</option>
+                            </select>
+                            <!-- NEW: Add to Queue -->
+                            <button id="add-to-queue-btn" class="btn-secondary">+ Add to Queue</button>
+                        </div>
+                    </div>
+                    
+                    <div class="override-box">
+                        <label>
+                            <input type="checkbox" id="override-wpm-check"> 
+                            Override reading speed for this book
+                        </label>
+                        <input type="number" id="override-wpm-value" value="250" disabled>
                     </div>
 
-                    <div class="setting">
-                        <label>Reading Speed (Words/min)</label>
-                        <input type="number" id="wpm" value="260" min="50" max="1000">
-                        <small id="wpm-helper">Fiction avg: ~260 wpm</small>
+                    <!-- Progress Section -->
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span id="progress-text">0 / 0 words read (0%)</span>
+                            <button id="log-session-btn" class="btn-primary">✅ Log 1 Pomodoro</button>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                        </div>
                     </div>
-                    <div class="setting">
-                        <label>Pomodoro Length (Mins)</label>
-                        <input type="number" id="pomo-time" value="25" min="5" max="120">
-                    </div>
-                    <div class="setting">
-                        <label>Weekday Sessions</label>
-                        <input type="number" id="weekday-sessions" value="2" min="0" max="10">
-                    </div>
-                    <div class="setting">
-                        <label>Weekend Sessions</label>
-                        <input type="number" id="weekend-sessions" value="4" min="0" max="10">
-                    </div>
-                </div>
-            </section>
 
-            <!-- RESULTS PANEL -->
-            <section class="plan-panel hidden" id="plan-panel">
-                <div class="book-header">
-                    <img id="book-cover" src="" alt="Cover" onerror="this.style.display='none'">
-                    <div class="book-title-area">
-                        <h2 id="selected-book-title">Select a book</h2>
-                        <p id="selected-book-author" class="author"></p>
-                        
-                        <!-- Status Dropdown -->
-                        <select id="book-status">
-                            <option value="unread">Unread</option>
-                            <option value="reading">Currently Reading</option>
-                            <option value="finished">Finished</option>
-                        </select>
-                        <!-- NEW: Add to Queue -->
-                        <button id="add-to-queue-btn" class="btn-secondary">+ Add to Queue</button>
+                    <div class="metrics">
+                        <div class="metric-card">
+                            <span class="label">Words Remaining</span>
+                            <span class="value" id="res-words">-</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="label">Time Remaining</span>
+                            <span class="value" id="res-hours">-</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="label">Pomodoros Left</span>
+                            <span class="value" id="res-sessions">-</span>
+                        </div>
+                        <div class="metric-card highlight">
+                            <span class="label">Est. Finish Date</span>
+                            <span class="value" id="res-date">-</span>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="override-box">
-                    <label>
-                        <input type="checkbox" id="override-wpm-check"> 
-                        Override reading speed for this book
-                    </label>
-                    <input type="number" id="override-wpm-value" value="250" disabled>
-                </div>
 
-                <!-- Progress Section -->
-                <div class="progress-section">
-                    <div class="progress-header">
-                        <span id="progress-text">0 / 0 words read (0%)</span>
-                        <button id="log-session-btn" class="btn-primary">✅ Log 1 Pomodoro</button>
+                    <div class="chapter-breakdown">
+                        <h3>Daily Target</h3>
+                        <p id="daily-target">-</p>
                     </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
-                    </div>
-                </div>
+                </section>
+            </div>
 
-                <div class="metrics">
-                    <div class="metric-card">
-                        <span class="label">Words Remaining</span>
-                        <span class="value" id="res-words">-</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="label">Time Remaining</span>
-                        <span class="value" id="res-hours">-</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="label">Pomodoros Left</span>
-                        <span class="value" id="res-sessions">-</span>
-                    </div>
-                    <div class="metric-card highlight">
-                        <span class="label">Est. Finish Date</span>
-                        <span class="value" id="res-date">-</span>
-                    </div>
+            <!-- NEW: SCHEDULE VIEW -->
+            <div id="view-schedule" class="hidden">
+                <div class="schedule-header">
+                    <h2>Next 30 Days Schedule</h2>
+                    <p>Based on your queue and reading speed.</p>
                 </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar days will be injected here -->
+                </div>
+            </div>
 
-                <div class="chapter-breakdown">
-                    <h3>Daily Target</h3>
-                    <p id="daily-target">-</p>
-                </div>
-            </section>
         </main>
     </div>
 

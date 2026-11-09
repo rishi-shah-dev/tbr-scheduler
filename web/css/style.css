@@ -103,7 +103,7 @@ header h1 { font-size: 1.2rem; }
 
 /* PLAN PANEL */
 .plan-panel { background: var(--panel-bg); padding: 2rem; border-radius: 12px; border: 1px solid var(--border); }
-.hidden { display: none; }
+.hidden { display: none !important; }
 .author { color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic; }
 
 .metrics {
@@ -373,4 +373,130 @@ header h1 { font-size: 1.2rem; }
     flex-direction: column;
     flex: 1;
     min-height: stretch;
+}
+
+/* --- MAIN TABS --- */
+.main-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.main-tabs button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+
+.main-tabs button.active {
+    color: var(--accent);
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 6px;
+}
+
+/* --- CALENDAR GRID --- */
+.schedule-header { margin-bottom: 1.5rem; }
+.schedule-header h2 { margin-bottom: 0.5rem; }
+.schedule-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.calendar-day {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-day.weekend {
+    background: #1a1a1a;
+    border-color: #444;
+}
+
+.calendar-day.today {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+.day-header {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.calendar-day.today .day-header { color: var(--accent); }
+
+.day-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.task-item {
+    background: #2a2a2a;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border-left: 3px solid #2196f3;
+}
+
+.task-item.finished {
+    border-left-color: var(--accent);
+    opacity: 0.7;
+}
+
+.task-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.task-words {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+.empty-state {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 3rem;
+    background: var(--panel-bg);
+    border-radius: 8px;
+}
+
+/* --- CALENDAR HEADERS & EMPTY CELLS --- */
+.calendar-header-cell {
+    text-align: center;
+    font-weight: bold;
+    color: var(--text-muted);
+    padding-bottom: 10px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.calendar-day.empty {
+    background: transparent;
+    border: 1px dashed #333;
+    opacity: 0.3;
 }
